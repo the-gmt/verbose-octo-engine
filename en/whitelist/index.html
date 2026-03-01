@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan and Score Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Source Sans 3', sans-serif; background: #ebebeb; color: #222; min-height: 100vh; padding: 24px; }
+  .page-wrap { display: grid; grid-template-columns: 1fr 260px; gap: 20px; max-width: 1100px; margin: 0 auto; align-items: start; }
+
+  /* MAIN CARD */
+  .main-card { background: #fff; border-radius: 6px; padding: 36px 40px 48px; min-height: 600px; }
+  .main-card h1 { font-size: 1.55rem; font-weight: 700; color: #1a1a1a; margin-bottom: 32px; }
+  .section-heading { font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+  .section-divider { border: none; border-top: 1px solid #e0e0e0; margin: 36px 0; }
+
+  /* AUTOSCAN */
+  .accounts-box { border: 1px solid #d0d0d0; border-radius: 6px; overflow: hidden; margin-bottom: 28px; }
+  .accounts-box-header { padding: 12px 20px; border-bottom: 1px solid #d0d0d0; font-size: 0.85rem; font-weight: 700; color: #2878a0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .account-row { display: flex; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eeeeee; gap: 12px; }
+  .account-row:last-child { border-bottom: none; }
+  .account-provider-icon { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .account-email { flex: 1; font-size: 0.95rem; color: #1a1a1a; }
+  .disconnect-btn { background: none; border: none; cursor: pointer; color: #999; padding: 4px; display: flex; align-items: center; border-radius: 4px; transition: color 0.15s; }
+  .disconnect-btn:hover { color: #c0392b; }
+  .disconnect-btn svg { width: 20px; height: 20px; }
+
+  .dont-see h3 { font-size: 0.975rem; font-weight: 700; color: #2878a0; margin-bottom: 10px; }
+  .dont-see p { font-size: 0.9rem; color: #555; line-height: 1.6; max-width: 580px; margin-bottom: 16px; }
+  .btn-outline { display: inline-block; border: 2px solid #333; background: #fff; color: #1a1a1a; font-family: inherit; font-size: 0.9rem; font-weight: 700; padding: 9px 20px; border-radius: 5px; cursor: pointer; text-decoration: none; }
+  .btn-outline:hover { background: #f5f5f5; }
+
+  /* SAFE SENDERS */
+  .sender-list-box { border: 1px solid #d0d0d0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+  .sender-list-header { background: #fff; padding: 12px 20px; border-bottom: 1px solid #d0d0d0; font-size: 0.85rem; font-weight: 700; color: #2878a0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+  .sender-count { font-size: 0.8rem; font-weight: 600; color: #888; text-transform: none; letter-spacing: 0; }
+  .sender-item { overflow: hidden; }
+  .sender-row { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid #eeeeee; gap: 12px; transition: background 0.12s; }
+  .sender-item:last-child .sender-row { border-bottom: none; }
+  .sender-row:hover { background: #fafafa; }
+  .sender-icon { width: 32px; height: 32px; border-radius: 50%; background: #e8f1f8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sender-icon svg { width: 16px; height: 16px; }
+  .sender-info { flex: 1; min-width: 0; }
+  .sender-email { font-size: 0.95rem; font-weight: 600; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sender-meta { font-size: 0.8rem; color: #888; margin-top: 1px; }
+  .sender-score { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; flex-shrink: 0; }
+  .score-high { background: #fde8e8; color: #b91c1c; }
+  .score-low { background: #e8f5ee; color: #166534; }
+  .remove-btn { background: none; border: none; cursor: pointer; color: #999; padding: 4px; display: flex; align-items: center; border-radius: 4px; flex-shrink: 0; transition: color 0.15s, background 0.15s; }
+  .remove-btn:hover { color: #c0392b; background: #fef2f2; }
+  .remove-btn svg { width: 18px; height: 18px; }
+
+  .undo-bar { display: none; align-items: center; gap: 10px; background: #1a1a1a; color: #fff; font-size: 0.875rem; padding: 10px 16px; border-radius: 6px; margin-top: 14px; margin-bottom: 28px; animation: fadeIn 0.2s ease; }
+  .undo-bar.visible { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .undo-link { color: #7ec8e3; font-weight: 700; text-decoration: none; cursor: pointer; margin-left: auto; white-space: nowrap; }
+  .undo-link:hover { text-decoration: underline; }
+
+  .how-to-add h3 { font-size: 0.975rem; font-weight: 700; color: #2878a0; margin-bottom: 10px; }
+  .how-to-add p { font-size: 0.9rem; color: #555; line-height: 1.6; max-width: 580px; }
+
+  /* SIDEBAR */
+  .sidebar-menu { background: #ebebeb; padding: 4px 0 20px; }
+  .sidebar-menu h3 { font-size: 1rem; font-weight: 700; color: #2878a0; margin-bottom: 12px; padding: 0 8px; }
+  .menu-item { display: block; padding: 9px 8px; font-size: 0.925rem; color: #333; text-decoration: none; border-radius: 4px; transition: background 0.12s; cursor: pointer; }
+  .menu-item:hover { background: rgba(0,0,0,0.05); }
+  .menu-item.active { font-weight: 700; color: #1a1a1a; }
+  .menu-divider { border: none; border-top: 1px solid #d0d0d0; margin: 16px 0; }
+
+  .stat-widget { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; }
+  .stat-icon { width: 44px; height: 44px; background: #e8a020; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stat-icon img { width: 24px; height: 24px; }
+  .stat-text strong { display: block; font-size: 0.875rem; font-weight: 700; color: #1a1a1a; line-height: 1.4; margin-bottom: 4px; }
+  .stat-text p { font-size: 0.825rem; color: #666; line-height: 1.5; }
+
+  @media (max-width: 700px) {
+    body { padding: 12px; }
+    .page-wrap { grid-template-columns: 1fr; }
+    .main-card { padding: 24px 20px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="main-card">
+    <h1>Scan &amp; Score</h1>
+
+    <!-- AUTOSCAN -->
+    <p class="section-heading">AutoScan</p>
+
+    <div class="accounts-box">
+      <div class="accounts-box-header">Connected AutoScan Accounts</div>
+      <div class="account-row">
+        <div class="account-provider-icon">
+          <img src="gmail_logo.png" alt="Gmail" width="28" height="28">
+        </div>
+        <span class="account-email" id="gmailAddr"></span>
+        <button class="disconnect-btn" aria-label="Disconnect account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            <line x1="4" y1="4" x2="20" y2="20"/>
+          </svg>
+        </button>
+      </div>
+      <div class="account-row">
+        <div class="account-provider-icon">
+          <img src="outlook_logo.png" alt="Outlook" width="28" height="28">
+        </div>
+        <span class="account-email" id="outlookAddr"></span>
+        <button class="disconnect-btn" aria-label="Disconnect account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            <line x1="4" y1="4" x2="20" y2="20"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="dont-see">
+      <h3>Don't see your email provider?</h3>
+      <p>Don't worry - you can still get powerful scam protection! You can manually scan and analyze any suspicious emails, texts, or links you receive. You'll get the same advanced AI analysis and instant results with just a couple of clicks.</p>
+      <a href="#" class="btn-outline">Scan Manually</a>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- SAFE SENDERS -->
+    <p class="section-heading">Safe Senders</p>
+
+    <div class="sender-list-box">
+      <div class="sender-list-header">
+        Safe Senders
+        <span class="sender-count" id="senderCount">3 senders</span>
+      </div>
+
+      <div class="sender-item" id="item1">
+        <div class="sender-row">
+          <div class="sender-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2878a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="sender-info">
+            <div class="sender-email" id="s1email"></div>
+            <div class="sender-meta">Added February 27, 2026 &nbsp;&middot;&nbsp; Scan: "Controversial morning routine&hellip;"</div>
+          </div>
+          <span class="sender-score score-high">High Risk scan</span>
+          <button class="remove-btn" id="removeBtn1" aria-label="Remove sender">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sender-item" id="item2">
+        <div class="sender-row">
+          <div class="sender-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2878a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="sender-info">
+            <div class="sender-email" id="s2email"></div>
+            <div class="sender-meta">Added February 14, 2026 &nbsp;&middot;&nbsp; Scan: "Your February statement is ready"</div>
+          </div>
+          <span class="sender-score score-low">Low Risk scan</span>
+          <button class="remove-btn" id="removeBtn2" aria-label="Remove sender">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sender-item" id="item3">
+        <div class="sender-row">
+          <div class="sender-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2878a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="sender-info">
+            <div class="sender-email" id="s3email"></div>
+            <div class="sender-meta">Added January 30, 2026 &nbsp;&middot;&nbsp; Scan: "Holiday photos"</div>
+          </div>
+          <span class="sender-score score-low">Low Risk scan</span>
+          <button class="remove-btn" id="removeBtn3" aria-label="Remove sender">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="undoBar" class="undo-bar">
+      <span id="undoText"></span>
+      <a class="undo-link" id="undoLink">Undo</a>
+    </div>
+
+    <div class="how-to-add">
+      <h3>How to add Safe Senders</h3>
+      <p>Safe Senders can be added from your Scan &amp; Score results. After scanning a message, click "Add to Safe Senders" below the result to add that sender to this list.</p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-menu">
+      <h3>Menu</h3>
+      <a class="menu-item active" href="#">Scan &amp; Score</a>
+      <a class="menu-item" href="#">Personal Info &amp; Privacy</a>
+      <a class="menu-item" href="#">Account &amp; Security Settings</a>
+      <a class="menu-item" href="#">Account Info &amp; Billing</a>
+      <a class="menu-item" href="#">Identity Restoration</a>
+      <a class="menu-item" href="#">Log Out</a>
+
+      <hr class="menu-divider">
+
+      <div class="stat-widget">
+        <div class="stat-icon">
+          <img src="share_online.svg" alt="">
+        </div>
+        <div class="stat-text">
+          <strong>50% of people freely share their info online.<sup>1</sup></strong>
+          <p>And they may not even realize they're doing it. Unfortunately, falling victim to online fraud isn't hard.</p>
+        </div>
+      </div>
+
+      <div class="stat-widget">
+        <div class="stat-icon">
+          <img src="vulnerable.svg" alt="">
+        </div>
+        <div class="stat-text">
+          <strong>78% surveyed Canadians feel vulnerable as a target for online fraud.<sup>2</sup></strong>
+          <p>Even the savviest person can fall for a trap when their guard is down.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Keep emails out of HTML to prevent obfuscation
+  document.getElementById('gmailAddr').textContent   = 'the.gmt' + '@' + 'gmail.com';
+  document.getElementById('outlookAddr').textContent = 'thomas_gm' + '@' + 'hotmail.com';
+  document.getElementById('s1email').textContent     = 'araldo.willy' + '@' + 'gmail.com';
+  document.getElementById('s2email').textContent     = 'newsletters' + '@' + 'rbc.com';
+  document.getElementById('s3email').textContent     = 'mom' + '@' + 'rogers.com';
+
+  var senders = [
+    { btnId: 'removeBtn1', itemId: 'item1', emailEl: 's1email' },
+    { btnId: 'removeBtn2', itemId: 'item2', emailEl: 's2email' },
+    { btnId: 'removeBtn3', itemId: 'item3', emailEl: 's3email' }
+  ];
+
+  var removedItem = null;
+  var undoTimer = null;
+
+  senders.forEach(function(s) {
+    document.getElementById(s.btnId).addEventListener('click', function() {
+      var email = document.getElementById(s.emailEl).textContent;
+      document.getElementById(s.itemId).style.display = 'none';
+      removedItem = s;
+      document.getElementById('undoText').textContent = email + ' removed from Safe Senders.';
+      document.getElementById('undoBar').classList.add('visible');
+      updateCount();
+      clearTimeout(undoTimer);
+      undoTimer = setTimeout(function() {
+        document.getElementById('undoBar').classList.remove('visible');
+        removedItem = null;
+      }, 6000);
+    });
+  });
+
+  document.getElementById('undoLink').addEventListener('click', function() {
+    if (!removedItem) return;
+    clearTimeout(undoTimer);
+    document.getElementById(removedItem.itemId).style.display = '';
+    document.getElementById('undoBar').classList.remove('visible');
+    removedItem = null;
+    updateCount();
+  });
+
+  function updateCount() {
+    var total = document.querySelectorAll('.sender-item').length;
+    var hidden = Array.from(document.querySelectorAll('.sender-item')).filter(function(el) {
+      return el.style.display === 'none';
+    }).length;
+    var active = total - hidden;
+    document.getElementById('senderCount').textContent = active + (active === 1 ? ' sender' : ' senders');
+  }
+</script>
+</body>
+</html>
